@@ -4,11 +4,12 @@ from cryptography.fernet import Fernet
 
 
 def generateFileKey():
+    keyPath = os.path.join(os.path.dirname(__file__), "filekey.key")
     try:
-        with open("filekey.key", "wb") as filekey:
-            file_size = os.path.getsize("filekey.key")
+        with open(keyPath, "wb") as filekey:
+            fileSize = os.path.getsize("filekey.key")
 
-            if file_size == 0:
+            if fileSize == 0:
                 key = Fernet.generate_key()
                 filekey.write(key)
     except FileNotFoundError:
@@ -17,12 +18,13 @@ def generateFileKey():
         generateFileKey()
 
 
+keyPath = os.path.join(os.path.dirname(__file__), "filekey.key")
 try:
-    with open("filekey.key", "rb") as filekey:
+    with open(keyPath, "rb") as filekey:
         key = filekey.read()
 except FileNotFoundError:
     generateFileKey()
-    with open("filekey.key", "rb") as filekey:
+    with open(keyPath, "rb") as filekey:
         key = filekey.read()
 
 fernet = Fernet(key)
