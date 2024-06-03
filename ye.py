@@ -5,45 +5,67 @@ import os
 from cryptography.fernet import Fernet, InvalidToken
 
 
-def generateFileKey():
-    # Get current path and concat with filekey.key
-    keyPath = os.path.join(os.path.dirname(__file__), ".filekey.key")
-    try:
+def generateFileKey(keyPath):
+    with open(keyPath, "wb") as filekey:
+        key = Fernet.generate_key()
+        filekey.write(key)
+    print(f"New key generated and saved to {keyPath}.")
+
+def copyKey():
+    specPath = input("Please specify the location of the existing key: ").strip()
+    if os.path.exists(specPath) and os.path.isfile(specPath):
+        with open(specPath, "rb") as filekey:
+            key = filekey.read()
         with open(keyPath, "wb") as filekey:
-            # Check file size
-            fileSize = os.path.getsize(".filekey.key")
+            filekey.write(key)
+        print(f"Key copied from {specPath} to {keyPath}.")
+    else:
+        print(f"No valid key file found at {specPath}.")
 
-            if fileSize == 0:
-                # If file is empty generate a key and write to it
-                key = Fernet.generate_key()
-                filekey.write(key)
-    except FileNotFoundError:
-        # If file doesnt exist generate the file and attempt to generate the key again
-        with open(".filekey.key", "wb") as filekey:
-            pass
-        generateFileKey()
-
+def keyCheck(keyPath):
+    while True:
+        choice = input("No key file found. Would you like to create a new key or specify the location of an existing key? (create/specify): ").strip().lower()
+        if choice == "create":
+            generateFileKey(keyPath)
+            break
+        elif choice == "specify":
+            copyKey()
+        else:
+            print("Invalid choice. Please type 'create' or 'specify'.")
 
 # Same as last keyPath, concat directory to keep filekey.key in the same dir as the main.py script
-keyPath = os.path.join(os.path.dirname(__file__), ".filekey.key")
+keyPath = os.path.join(os.path.dirname(__file__), ".ye_filekey.key")
+
 try:
     with open(keyPath, "rb") as filekey:
         key = filekey.read()
 except FileNotFoundError:
     # If file doesnt exist attempt key generation (which will generate a file if there isnt one)
-    generateFileKey()
+    keyCheck(keyPath)
     with open(keyPath, "rb") as filekey:
         key = filekey.read()
 
 fernet = Fernet(key)
 
 # Check if all arguements are present
-if len(sys.argv) < 3:
+if len(sys.argv) < 2:
     print(f"Error: Missing arguements\nUsage: ye <method> <filename>")
     sys.exit(1)
 
 # Terminal arguements
 method = sys.argv[1]
+
+if method == "cpkey":
+    copyKey()
+    sys.exit(0)
+elif method == "help":
+    print(f"Usage: ye <method> <filename>\n\nMethods include: 'encrypt', 'decrypt', 'cpkey','help'\nSecond arguements for the respective methods: <filename>, <filename>, <filekey_location>, <none>\n\nMake sure you dont delete your .ye_filekey.key wherever its located as this is the key used\nto encrypt and decrypt any of the files you use through this program,\ncpkey copies the key from the file you specify to the .ye_filekey.key so be careful using\nthis command as you may lose your original key and any encrypyted information with it.")
+    sys.exit(0)
+
+if len(sys.argv) < 3:
+    print(f"Error: Missing arguements\nUsage: ye <method> <filename>")
+    sys.exit(1)
+
 file_path = sys.argv[2]
 
 
@@ -60,6 +82,7 @@ def decrypt(filename):
             # Write the decrypted content back into the file
             decryptedFile.write(decrypted)
 
+        print("File successfully decrypted!")
     except FileNotFoundError:
         print("Error: The file you are trying to decrypt cannot be found")
         sys.exit(1)
@@ -74,7 +97,7 @@ def decrypt(filename):
 def encrypt(filename):
     try:
         with open(filename, "rb") as file:
-            # Store file content
+            # Store file c ontent
             original = file.read()
 
         # Encrypt stored file content
@@ -83,6 +106,8 @@ def encrypt(filename):
         with open(filename, "wb") as encrypted_file:
             # Write encrypted content back into the file
             encrypted_file.write(encrypted)
+
+        print("File successfully encrypted!")
     except FileNotFoundError:
         print("Error: the file you are trying to encrypt cannot be found")
         sys.exit(1)
