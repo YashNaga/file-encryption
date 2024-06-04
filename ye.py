@@ -70,7 +70,7 @@ if method == "cpkey":
     sys.exit(0)
 elif method == "help":
     print(
-        f"Usage: ye <method> <filename>\n\nMethods include: 'encrypt', 'decrypt', 'cpkey','help'\nSecond arguements for the respective methods: <filename>, <filename>, <filekey_location>, <none>\n\nMake sure you dont delete your .ye_filekey.key wherever its located as this is the key used\nto encrypt and decrypt any of the files you use through this program,\ncpkey copies the key from the file you specify to the .ye_filekey.key so be careful using\nthis command as you may lose your original key and any encrypyted information with it."
+        f"Usage: ye <method> <filename>\n\nMethods include: 'encrypt', 'decrypt', 'cpkey','help'\nSecond arguements for the respective methods: <filename>, <filename>, <filekey_location>, <none>\n\nMake sure you dont delete your .ye_filekey.key wherever its located as this is the key used\nto encrypt and decrypt any of the files you use through this program,\ncpkey copies the key from the file you specify to the .ye_filekey.key so be careful using\nthis command as you may lose your original key and any encrypted information with it."
     )
     sys.exit(0)
 
