@@ -9,29 +9,39 @@ def generateFileKey(keyPath):
     with open(keyPath, "wb") as filekey:
         key = Fernet.generate_key()
         filekey.write(key)
-    print(f"New key generated and saved to {keyPath}.")
+    print(f"New key generated and saved to {keyPath}")
 
-def copyKey():
+
+def copyKey(keyPath):
     specPath = input("Please specify the location of the existing key: ").strip()
     if os.path.exists(specPath) and os.path.isfile(specPath):
         with open(specPath, "rb") as filekey:
             key = filekey.read()
         with open(keyPath, "wb") as filekey:
             filekey.write(key)
-        print(f"Key copied from {specPath} to {keyPath}.")
+        print(f"Key copied from {specPath} to {keyPath}")
     else:
-        print(f"No valid key file found at {specPath}.")
+        print(f"No valid key file found at {specPath}")
+
 
 def keyCheck(keyPath):
     while True:
-        choice = input("No key file found. Would you like to create a new key or specify the location of an existing key? (create/specify): ").strip().lower()
+        choice = (
+            input(
+                "No key file found. Would you like to create a new key or specify the location of an existing key? (create/specify): "
+            )
+            .strip()
+            .lower()
+        )
         if choice == "create":
             generateFileKey(keyPath)
             break
         elif choice == "specify":
-            copyKey()
+            copyKey(keyPath)
+            break
         else:
-            print("Invalid choice. Please type 'create' or 'specify'.")
+            print("Invalid choice. Please type 'create' or 'specify'")
+
 
 # Same as last keyPath, concat directory to keep filekey.key in the same dir as the main.py script
 keyPath = os.path.join(os.path.dirname(__file__), ".ye_filekey.key")
@@ -56,10 +66,12 @@ if len(sys.argv) < 2:
 method = sys.argv[1]
 
 if method == "cpkey":
-    copyKey()
+    copyKey(keyPath)
     sys.exit(0)
 elif method == "help":
-    print(f"Usage: ye <method> <filename>\n\nMethods include: 'encrypt', 'decrypt', 'cpkey','help'\nSecond arguements for the respective methods: <filename>, <filename>, <filekey_location>, <none>\n\nMake sure you dont delete your .ye_filekey.key wherever its located as this is the key used\nto encrypt and decrypt any of the files you use through this program,\ncpkey copies the key from the file you specify to the .ye_filekey.key so be careful using\nthis command as you may lose your original key and any encrypyted information with it.")
+    print(
+        f"Usage: ye <method> <filename>\n\nMethods include: 'encrypt', 'decrypt', 'cpkey','help'\nSecond arguements for the respective methods: <filename>, <filename>, <filekey_location>, <none>\n\nMake sure you dont delete your .ye_filekey.key wherever its located as this is the key used\nto encrypt and decrypt any of the files you use through this program,\ncpkey copies the key from the file you specify to the .ye_filekey.key so be careful using\nthis command as you may lose your original key and any encrypyted information with it."
+    )
     sys.exit(0)
 
 if len(sys.argv) < 3:
